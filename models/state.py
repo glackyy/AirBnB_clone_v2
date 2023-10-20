@@ -5,6 +5,7 @@ from sqlalchemy import String, Column
 from sqlalchemy.orm import relationship
 from models.city import City
 import models
+import shlex
 
 
 class State(BaseModel, Base):
@@ -20,9 +21,15 @@ class State(BaseModel, Base):
 
         @property
         def cities(self):
-            """Method that gets cities"""
-            cityList = []
-            for cityV in models.storage.all(City).values():
-                if getattr(cityV, "state_id") == self.id:
-                    cityList.append(cityV)
-            return cityList
+            var = models.storage.all()
+            listarg = []
+            res = []
+            for k in var:
+                city = k.replace('.', ' ')
+                city = shlex.split(city)
+                if (city[0] == 'City'):
+                    listarg.append(var[k])
+            for element in listarg:
+                if (element.state_id == self.id):
+                    res.append(element)
+            return (res)
